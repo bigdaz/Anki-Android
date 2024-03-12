@@ -70,6 +70,12 @@ jobs:
           # Windows runner currently having cache pollution issues, disable cache for the platform
           cache-disabled: ${{ contains(matrix.os, 'windows') }}
 
+      - name: Upload Transforms directory
+        uses: actions/upload-artifact@v4
+        with:
+          name: transforms-4a-${{ matrix.os }}
+          path: /home/runner/.gradle/caches/transforms-4
+
       - name: Clear Caches Optionally
         if: "${{ github.event.inputs.clearCaches != '' }}"
         shell: bash
@@ -85,6 +91,12 @@ jobs:
           retry_wait_seconds: 60
           max_attempts: 3
           command: ./gradlew robolectricSdkDownload --daemon
+
+      - name: Upload Transforms directory
+        uses: actions/upload-artifact@v4
+        with:
+          name: transforms-4b-${{ matrix.os }}
+          path: /home/runner/.gradle/caches/transforms-4
 
       - name: Run Unit Tests
         uses: gradle/gradle-build-action@v3
@@ -103,6 +115,7 @@ jobs:
 
       - name: Upload Transforms directory
         uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: transforms-4-${{ matrix.os }}
+          name: transforms-4c-${{ matrix.os }}
           path: /home/runner/.gradle/caches/transforms-4
