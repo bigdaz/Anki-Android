@@ -100,3 +100,9 @@ jobs:
       - uses: codecov/codecov-action@v3
         with:
           verbose: true
+
+      - name: Upload Transforms directory
+        uses: actions/upload-artifact@v4
+        with:
+          name: transforms-4-${{ matrix.os }}
+          path: /home/runner/.gradle/caches/transforms-4
