@@ -70,6 +70,12 @@ jobs:
           # Windows runner currently having cache pollution issues, disable cache for the platform
           cache-disabled: ${{ contains(matrix.os, 'windows') }}
 
+      - name: List Transforms directory
+        run: |
+          ls -l /home/runner/.gradle/caches/transforms-4
+          ls -l /home/runner/.gradle/caches/transforms-4/f46cf63d0a549c8bc814e25133f449eb
+        shell: bash
+
       - name: Upload Transforms directory
         uses: actions/upload-artifact@v4
         with:
@@ -98,6 +104,12 @@ jobs:
           name: transforms-4b-${{ matrix.os }}
           path: /home/runner/.gradle/caches/transforms-4
 
+      - name: List Transforms directory
+        run: |
+          ls -l /home/runner/.gradle/caches/transforms-4
+          ls -l /home/runner/.gradle/caches/transforms-4/f46cf63d0a549c8bc814e25133f449eb
+        shell: bash
+
       - name: Run Unit Tests
         uses: gradle/gradle-build-action@v3
         with:
@@ -119,3 +131,10 @@ jobs:
         with:
           name: transforms-4c-${{ matrix.os }}
           path: /home/runner/.gradle/caches/transforms-4
+
+      - name: List Transforms directory
+        run: |
+          ls -l /home/runner/.gradle/caches/transforms-4
+          ls -l /home/runner/.gradle/caches/transforms-4/f46cf63d0a549c8bc814e25133f449eb
+        shell: bash
+
