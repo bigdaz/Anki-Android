@@ -27,15 +27,13 @@ jobs:
       matrix:
         # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
         # macOS 14 is in beta and runs on Apple Silicon [M1]
-        os: [ubuntu-latest, macos-14, windows-latest]
+        os: [ubuntu-latest, macos-14]
         # define 'name' so we don't need to update branch protection rules if the os changes
         include:
           - os: ubuntu-latest
             name: ubuntu
           - os: macos-14
             name: macos
-          - os: windows-latest
-            name: windows
     runs-on: ${{ matrix.os }}
     #env:
     #  CODACY_TOKEN: ${{ secrets.CODACY_TOKEN }}
@@ -69,6 +67,16 @@ jobs:
           gradle-home-cache-cleanup: true
           # Windows runner currently having cache pollution issues, disable cache for the platform
           cache-disabled: ${{ contains(matrix.os, 'windows') }}
+          build-scan-publish: true
+          build-scan-terms-of-service-url: "https://gradle.com/terms-of-service"
+          build-scan-terms-of-service-agree: "yes"
+
+      - name: Upload Transforms directory before
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: transforms-androidjar-before-${{ matrix.os }}
+          path: ~/.gradle/caches/transforms-4/f46cf63d0a549c8bc814e25133f449eb
 
       - name: Clear Caches Optionally
         if: "${{ github.event.inputs.clearCaches != '' }}"
@@ -87,9 +95,9 @@ jobs:
           command: ./gradlew robolectricSdkDownload --daemon
 
       - name: Run Unit Tests
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v3
         with:
-          arguments: jacocoUnitTestReport --daemon
+          arguments: :AnkiDroid:testPlayDebugUnitTest --tests "com.ichi2.utils.MapUtilTest" jacocoUnitTestReport --daemon --info
 
       - name: Stop Gradle
         if: contains(matrix.os, 'windows')
@@ -100,3 +108,10 @@ jobs:
       - uses: codecov/codecov-action@v3
         with:
           verbose: true
+
+      - name: Upload Transforms directory after
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: transforms-androidjar-after-${{ matrix.os }}
+          path: ~/.gradle/caches/transforms-4/f46cf63d0a549c8bc814e25133f449eb
